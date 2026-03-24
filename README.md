@@ -22,13 +22,13 @@ Everything starts with the Database Chat Interface. When a user submits a questi
 This agent acts as the project manager. Powered by an OpenAI Chat Model and equipped with Conversation Memory, it reviews the user's request, looks at the overall database schema, and decides which specialized sub-agent needs to be deployed first.
 
 ## Step 2: The Data Retriever (SQL Agent & Supabase Tool)
-Once the Orchestrator understands the assignment, it tags in the SQL Agent.
+Once the Orchestrator understands the assignment, it tags in the SQL Agent. [Prompt Link](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/8446a02674764e3a45b2ee45a2586cc2fa0008b3/SQL%20AI%20agent/SQL%20AI%20Agent.txt)
 ![alt image](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/fc4790e4a3ed78839df2907c5475fe560d2bf998/SQL%20AI%20agent/SQL%20AI%20Agent.png)
 
 This agent is configured as a strict PostgreSQL expert. Instead of just guessing the syntax, it formulates the exact query needed to answer the user's question based on the specific tables (dim_customers, dim_products, fact_sales_details). It then uses the Supabase Database Tool to securely execute the query directly against the live database. No manual exporting or CSV wrangling required.
 
 ## Step 3: The Insight Generator (Data Analyst Agent)
-Raw numbers are great, but businesses need insights. Once the SQL Agent returns the raw dataset, the Orchestrator hands it over to the Data Analyst Agent.
+Raw numbers are great, but businesses need insights. Once the SQL Agent returns the raw dataset, the Orchestrator hands it over to the Data Analyst Agent. [Prompt Link](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/8446a02674764e3a45b2ee45a2586cc2fa0008b3/Data%20Analysis%20Agent/Data%20Analysis%20Agent.txt)
 ![alt image](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/fc4790e4a3ed78839df2907c5475fe560d2bf998/Data%20Analysis%20Agent/Data%20Analysis%20Agent.png)
 
 This agent's system prompt is tuned specifically for sales and delivery performance analytics. It doesn't just parrot the numbers back; it calculates market share, identifies category concentration (e.g., noting that Dairy makes up 94.67% of the top-10 volume), and generates actionable recommendations like prioritizing specific supply chain routes for high-volume SKUs. It’s incredibly useful for tracking fast-moving agribusiness goods or monitoring regional logistics performance.
