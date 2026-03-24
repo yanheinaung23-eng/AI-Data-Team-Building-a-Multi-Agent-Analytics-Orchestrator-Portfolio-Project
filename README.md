@@ -58,5 +58,6 @@ Everytime any user asks the questions, it will append timestamp, user question, 
 We go from a simple question ("What are the top 10 best-selling products?") to an executed SQL query, a formatted analytical report with actionable supply chain insights, and a fully audited log—all in seconds.
 
 By separating the "thinking" (Orchestrator), the "querying" (SQL Agent), and the "interpreting" (Data Analyst), the system remains highly accurate and modular. It’s an end-to-end data pipeline that showcases how AI can accelerate business intelligence.
+
 ----------------------------------------------------------------------------------------------------------
 🛡️ License This project is licensed under the MIT License. You are free to use, modify, and share this project with proper attribution.
