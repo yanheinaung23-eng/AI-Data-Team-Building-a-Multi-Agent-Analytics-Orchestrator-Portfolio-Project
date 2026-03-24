@@ -7,7 +7,13 @@ The usage is simple, ask questions related to the dataabase, the AI team will wo
 
 ![alt image](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/12262baf03af6b037538c32c1d799bfac71828ee/Main%20Orchestrator%20Agent/final%20layout%202.png)
 
-Here is a step-by-step breakdown of how this automated data team operates under the hood.
+Here is my introduction of my project,step-by-step breakdown of how this automated data team operates under the hood with this presentation video created with notebookLM AI.
+
+
+
+https://github.com/user-attachments/assets/64580081-c167-4b4c-8f29-18cba9a306eb
+
+
 
 ## Step 1: The Brain of the Operation (Main Orchestrator Agent)
 Everything starts with the Database Chat Interface. When a user submits a question—like asking for the top 10 best-selling products by volume—the input is passed to the Main Orchestrator Agent. [Prompt Link](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/fc4790e4a3ed78839df2907c5475fe560d2bf998/Main%20Orchestrator%20Agent/Main%20Orchestrator%20Agent.txt)
