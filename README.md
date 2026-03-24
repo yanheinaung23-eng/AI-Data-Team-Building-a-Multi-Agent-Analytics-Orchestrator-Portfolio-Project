@@ -15,6 +15,7 @@ This agent acts as the project manager. Powered by an OpenAI Chat Model and equi
 
 ## Step 2: The Data Retriever (SQL Agent & Supabase Tool)
 Once the Orchestrator understands the assignment, it tags in the SQL Agent.
+![alt image](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/fc4790e4a3ed78839df2907c5475fe560d2bf998/SQL%20AI%20agent/SQL%20AI%20Agent.txt)
 
 This agent is configured as a strict PostgreSQL expert. Instead of just guessing the syntax, it formulates the exact query needed to answer the user's question based on the specific tables (dim_customers, dim_products, fact_sales_details). It then uses the Supabase Database Tool to securely execute the query directly against the live database. No manual exporting or CSV wrangling required.
 
