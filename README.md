@@ -2,6 +2,7 @@
 As data analysts, we know that getting actionable insights usually involves a multi-step dance: writing the SQL query, extracting the data, analyzing the trends, and finally logging the report. But what if you could automate that entire pipeline with an intelligent team of AI agents working together?
 
 Recently, I built a Multi-Agent Analytics Orchestrator using n8n free trial and OpenAi APIs free credits to do exactly that. It takes a natural language question, queries a PostgreSQL database, analyzes the output, and logs the entire interaction into a spreadsheet for auditing.
+The usage is simple, ask questions related to the dataabase, the AI team will work together and give back the answers through chat and record any questions, SQL query, AI insight into a specific spreadsheet. Anytime the users ask a question and get answers all the record data will be stored in this [spreadsheet](https://docs.google.com/spreadsheets/d/1We632OG72O5BPFXtzqfNDzAaUb3LlDJSPJSJoSE55vg/edit?gid=0#gid=0)
 
 ![alt image](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/12262baf03af6b037538c32c1d799bfac71828ee/Main%20Orchestrator%20Agent/final%20layout%202.png)
 
