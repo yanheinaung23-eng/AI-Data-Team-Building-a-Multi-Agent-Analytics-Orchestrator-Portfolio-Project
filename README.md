@@ -28,7 +28,7 @@ Raw numbers are great, but businesses need insights. Once the SQL Agent returns 
 This agent's system prompt is tuned specifically for sales and delivery performance analytics. It doesn't just parrot the numbers back; it calculates market share, identifies category concentration (e.g., noting that Dairy makes up 94.67% of the top-10 volume), and generates actionable recommendations like prioritizing specific supply chain routes for high-volume SKUs. It’s incredibly useful for tracking fast-moving agribusiness goods or monitoring regional logistics performance.
 
 ## Step 4: The Cleanser (JavaScript Code Node)
-AI models are notorious for generating clunky markdown formatting (like scattered asterisks or messy line breaks) that don't play nicely with standard spreadsheets.
+AI models are notorious for generating clunky markdown formatting (like scattered asterisks or messy line breaks) that don't play nicely with standard spreadsheets. [JavaScript](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/fc4790e4a3ed78839df2907c5475fe560d2bf998/scripts/Javascript%20for%20editing%20text.txt)
 
 Before the data reaches its final destination, it passes through a JavaScript Node. This custom script acts as a data cleanser. It strips out markdown formatting, normalizes the text spacing, and automatically generates a clean ISO timestamp for the exact moment the query was run.
 
