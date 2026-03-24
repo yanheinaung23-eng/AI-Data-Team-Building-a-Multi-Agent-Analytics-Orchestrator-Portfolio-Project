@@ -1,0 +1,32 @@
+// 1. Grab your raw clumped text
+const rawText = $input.first().json.output || "";
+
+// 2. Extract the Timestamp
+// Looks for "Timestamp:" and grabs everything until the end of the line
+const timestampMatch = rawText.match(/Timestamp:\s*([^\n]+)/);
+const timestamp = timestampMatch ? timestampMatch[1].trim() : "";
+
+// 3. Extract the User Question
+// Looks for "User question:" and grabs everything until the end of the line
+const questionMatch = rawText.match(/User question:\s*([^\n]+)/);
+const userQuestion = questionMatch ? questionMatch[1].trim() : "";
+
+// 4. Extract the SQL Query
+// Looks for "SQL query used:\n" and grabs everything until it hits a double line break (\n\n)
+const sqlMatch = rawText.match(/SQL query executed:\n([\s\S]*?)\n\n/);
+const sqlQuery = sqlMatch ? sqlMatch[1].trim() : "";
+
+// 5. Extract the Results / AI Output
+// Grabs everything remaining after the double line break that follows the SQL
+const resultsMatch = rawText.match(/\n\n(Top [\s\S]*)$/);
+const results = resultsMatch ? resultsMatch[1].trim() : "";
+
+// 6. Return the beautifully separated columns!
+return {
+  json: {
+    Timestamp: timestamp,
+    User_Question: userQuestion,
+    SQL_Query: sqlQuery,
+    AI_Response: results
+  }
+};

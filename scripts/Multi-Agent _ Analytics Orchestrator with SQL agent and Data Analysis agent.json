@@ -1,0 +1,406 @@
+{
+  "name": "Multi-Agent : Analytics Orchestrator with SQL agent and Data Analysis agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "0466f80d-adc8-40ce-82d3-18996ed63fe9",
+      "name": "Database Chat Interface",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        304
+      ],
+      "webhookId": "ccc01ad3-4c1e-4850-8fa9-d3af857cb3fe"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are the Main Orchestrator Agent managing a team of specialized analysts. Your team includes:\n\n1. SQL Agent - Generates and executes SQL queries against the Supabase database\n2. Data Analyst Agent - Analyzes datasets and provides the requested answers and insights\n\n\nDatabase Schema:\n- dim_customers: customer_id (PK), customer_name, city\n- dim_products: product_id (PK), product_name, category\n- fact_sales_details: order_id (PK), order_placement_date, customer_id (FK), product_id (FK), order_qty, agreed_delivery_date, actual_delivery_date, delivery_qty, \"In Full\" (boolean: 1=full, 0=not), \"On Time\" (boolean: 1=on time, 0=late), \"On Time In Full\" (boolean: 1=both, 0=not)\n\nWhen a user asks a question:\n1. Use the SQL Agent to query the database\n2. Pass the results to the Data Analyst Agent for analysis\n3. Provide a comprehensive answer to the user\n\nCoordinate these agents efficiently to answer user questions about sales, customers, products, and delivery performance.\n\n(IMPORTANT)\nAnd give different ouput : timestamp, user question, their SQL query into different outputs.\nDo not ask extra question back to the user. Only give the answer according to the question what the user ask."
+        }
+      },
+      "id": "10fb54aa-fed2-4b43-a349-bc545d168d2a",
+      "name": "Main Orchestrator Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        864,
+        304
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "3cb95d58-420e-4f2d-bec8-7b26b19d7390",
+      "name": "Conversation Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Generates and executes SQL queries against the Supabase Postgres database. Use this agent when you need to retrieve data from the database. It has access to dim_customers, dim_products, and fact_sales_details tables.",
+        "text": "={{ $fromAI('query_request', 'The data query or question that needs a SQL query to answer') }}",
+        "options": {
+          "systemMessage": "You are a SQL expert specializing in PostgreSQL queries for a sales analytics database.\n\nDatabase Schema:\n\nTable: dim_customers\n- customer_id (integer, PRIMARY KEY)\n- customer_name (text)\n- city (text)\n\nTable: dim_products\n- product_id (integer, PRIMARY KEY)\n- product_name (text)\n- category (text)\n\nTable: fact_sales_details\n- order_id (integer, PRIMARY KEY)\n- order_placement_date (date)\n- customer_id (integer, FOREIGN KEY to dim_customers)\n- product_id (integer, FOREIGN KEY to dim_products)\n- order_qty (integer)\n- agreed_delivery_date (date)\n- actual_delivery_date (date)\n- delivery_qty (integer)\n- \"In Full\" (integer, boolean: 1=delivered in full, 0=not)\n- \"On Time\" (integer, boolean: 1=delivered on time, 0=late)\n- \"On Time In Full\" (integer, boolean: 1=both conditions met, 0=not)\n\nGenerate efficient SQL queries to answer questions. Use proper JOINs when data spans multiple tables. Return the SQL query results."
+        }
+      },
+      "id": "ac4f7eaa-c334-4f7c-9ec7-60d31a5414d0",
+      "name": "SQL Agent",
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        720,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Executes SQL queries against the Supabase Postgres database containing dim_customers, dim_products, and fact_sales_details tables. Provide a SQL query to execute.",
+        "operation": "executeQuery",
+        "query": "{{ $fromAI('query', 'SQL query to execute against the database') }}",
+        "options": {}
+      },
+      "id": "73faa3c0-faa8-4574-8ea5-0505fe28f908",
+      "name": "Supabase Database Tool",
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        864,
+        752
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "J0J87hF4oZMdjS2D",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Analyzes datasets and provides insights, trends, patterns, and actionable recommendations. Use this agent to interpret query results and answer analytical questions.",
+        "text": "={{ $fromAI('dataset_and_question', 'The dataset to analyze and the analytical question to answer') }}",
+        "options": {
+          "systemMessage": "You are a Data Analyst expert specializing in sales and delivery performance analytics.\n\nYour role is to:\n- Analyze datasets provided to you\n- Identify trends, patterns, and anomalies\n- Calculate key metrics and KPIs\n- Provide clear, actionable insights\n- Answer questions about the data with context and explanation\n\nWhen analyzing sales data, consider:\n- Customer behavior and segmentation\n- Product performance by category\n- Delivery performance metrics (In Full, On Time, On Time In Full)\n- Time-based trends\n- Comparative analysis\n\nProvide concise, business-focused insights that help answer the user's question."
+        }
+      },
+      "id": "e90d8fbd-0dfa-4233-a866-887f1d8f7aec",
+      "name": "Data Analyst Agent",
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        1040,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Grab your raw clumped text\nconst rawText = $input.first().json.output || \"\";\n\n// 2. Extract the Timestamp\n// (Added 'i' flag at the end so it works even if it says \"timestamp:\")\nconst timestampMatch = rawText.match(/Timestamp:\\s*([^\\n]+)/i);\nconst timestamp = timestampMatch ? timestampMatch[1].trim() : \"\";\n\n// 3. Extract the User Question\n// (Added 'i' flag for case-insensitivity)\nconst questionMatch = rawText.match(/User question:\\s*([^\\n]+)/i);\nconst userQuestion = questionMatch ? questionMatch[1].trim() : \"\";\n\n// 4. Extract the SQL Query\n// FIX: Looks for \"executed:\" OR \"used:\" and grabs everything up to the semicolon.\n// This prevents it from failing if the AI changes line breaks (\\n\\n).\nconst sqlMatch = rawText.match(/SQL query (?:executed|used):\\s*([\\s\\S]*?;)/i);\nconst sqlQuery = sqlMatch ? sqlMatch[1].trim() : \"\";\n\n// 5. Extract the Results / AI Output\n// FIX: Instead of looking for exact words like \"SQL results\" or \"top\", \n// we safely grab absolutely everything that comes after the SQL semicolon.\nlet results = \"\";\nconst lastSemicolonIndex = rawText.lastIndexOf(\";\");\nif (lastSemicolonIndex !== -1) {\n    results = rawText.substring(lastSemicolonIndex + 1).trim();\n}\n\n// 6. Return the beautifully separated columns!\nreturn {\n  json: {\n    Timestamp: timestamp,\n    User_Question: userQuestion,\n    SQL_Query: sqlQuery,\n    AI_Response: results\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        304
+      ],
+      "id": "9f0e3ee3-110c-40c4-869b-b1513ac24a13",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        336,
+        544
+      ],
+      "id": "487c8949-3bd2-4322-b212-df761d916569",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "A5mYDfCue7NJCvUL",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        752
+      ],
+      "id": "481d142b-ba17-4d58-a27e-a19d06031d11",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "A5mYDfCue7NJCvUL",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1We632OG72O5BPFXtzqfNDzAaUb3LlDJSPJSJoSE55vg",
+          "mode": "list",
+          "cachedResultName": "Record log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1We632OG72O5BPFXtzqfNDzAaUb3LlDJSPJSJoSE55vg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1We632OG72O5BPFXtzqfNDzAaUb3LlDJSPJSJoSE55vg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $json.Timestamp }}",
+            "User Question": "={{ $json.User_Question }}",
+            "AI response": "={{ $json.AI_Response }}",
+            "AI SQL query": "={{ $json.SQL_Query }}"
+          },
+          "matchingColumns": [
+            "Timestamp"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User Question",
+              "displayName": "User Question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI SQL query",
+              "displayName": "AI SQL query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI response",
+              "displayName": "AI response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1472,
+        304
+      ],
+      "id": "d1d9fce7-581a-4a45-8821-bc23a0047c2a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tSj2jD4bfgksW366",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        752
+      ],
+      "id": "886ba4e1-3f94-4ff8-93f3-b081d241ec03",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "A5mYDfCue7NJCvUL",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Database Chat Interface": {
+      "main": [
+        [
+          {
+            "node": "Main Orchestrator Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Main Orchestrator Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Database Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "SQL Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SQL Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Main Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Analyst Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Main Orchestrator Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Main Orchestrator Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Main Orchestrator Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "SQL Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Data Analyst Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "a870114c-df7d-45e4-bc77-516fd6555619",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "def8d47bf383d6185f624d3dc7361afd827f124984904502e453ceaa584a2c01"
+  },
+  "id": "JJxWz5MiMVXz9wjj",
+  "tags": []
+}
