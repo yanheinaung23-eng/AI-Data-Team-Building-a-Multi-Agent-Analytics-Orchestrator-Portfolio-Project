@@ -34,6 +34,7 @@ Before the data reaches its final destination, it passes through a JavaScript No
 
 ## Step 5: The System of Record (Google Sheets Integration)
 Transparency is critical in data analytics. You never want a "black box" where AI generates numbers with no paper trail.
+![alt image](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/3e5431ec8880ac18125d044b919e1830e28f869b/response.png)
 
 The final step of the workflow routes the perfectly formatted data into an Append Row to Sheet node. It maps the custom JavaScript variables and logs a complete record of the transaction:
 
