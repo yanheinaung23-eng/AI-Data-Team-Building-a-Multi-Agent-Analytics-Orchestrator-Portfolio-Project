@@ -2,6 +2,7 @@
 As data analysts, we know that getting actionable insights usually involves a multi-step dance: writing the SQL query, extracting the data, analyzing the trends, and finally logging the report. But what if you could automate that entire pipeline with an intelligent team of AI agents working together?
 
 Recently, I built a Multi-Agent Analytics Orchestrator using n8n free trial and OpenAi APIs free credits to do exactly that. It takes a natural language question, queries a PostgreSQL database, analyzes the output, and logs the entire interaction into a spreadsheet for auditing.
+
 The usage is simple, ask questions related to the dataabase, the AI team will work together and give back the answers through chat and record any questions, SQL query, AI insight into a specific spreadsheet. Anytime the users ask a question and get answers all the record data will be stored in this [spreadsheet](https://docs.google.com/spreadsheets/d/1We632OG72O5BPFXtzqfNDzAaUb3LlDJSPJSJoSE55vg/edit?gid=0#gid=0)
 
 ![alt image](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/12262baf03af6b037538c32c1d799bfac71828ee/Main%20Orchestrator%20Agent/final%20layout%202.png)
@@ -22,6 +23,7 @@ This agent is configured as a strict PostgreSQL expert. Instead of just guessing
 
 ## Step 3: The Insight Generator (Data Analyst Agent)
 Raw numbers are great, but businesses need insights. Once the SQL Agent returns the raw dataset, the Orchestrator hands it over to the Data Analyst Agent.
+![alt image](https://github.com/yanheinaung23-eng/AI-Data-Team-Building-a-Multi-Agent-Analytics-Orchestrator-Portfolio-Project/blob/fc4790e4a3ed78839df2907c5475fe560d2bf998/Data%20Analysis%20Agent/Data%20Analysis%20Agent.png)
 
 This agent's system prompt is tuned specifically for sales and delivery performance analytics. It doesn't just parrot the numbers back; it calculates market share, identifies category concentration (e.g., noting that Dairy makes up 94.67% of the top-10 volume), and generates actionable recommendations like prioritizing specific supply chain routes for high-volume SKUs. It’s incredibly useful for tracking fast-moving agribusiness goods or monitoring regional logistics performance.
 
